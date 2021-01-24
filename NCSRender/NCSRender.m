@@ -10,15 +10,23 @@
 %% History
 %    01/19/21  dhb  Wrote it.
 %    01/20/21  dhb  Commented more fully.
+%    01/24/21  dhb  Output to local/NCSRenderOut in repository.
 
 %% Initialize
 clear; close all; ieInit;
 if ~piDockerExists, piDockerConfig; end
 
+%% Find directory this file runs in and set up output
+[a,b] = fileparts(which(mfilename));
+outputFilePath = fullfile(a,'..','local','NCSRenderOut');
+if (~exist(outputFilePath,'dir'))
+    mkdir(outputFilePath)
+end
+
 %% Read simple base scene and get rid of some extraneous stuff, and render
 sceneName = 'simple scene';
 thisR = piRecipeDefault('scene name', sceneName);
-FASTRENDER = false;
+FASTRENDER = true;
 if (FASTRENDER)
     thisR.set('film resolution',[200 150]);
     thisR.set('rays per pixel',40);
@@ -45,6 +53,7 @@ mirrorSubtree = thisR.assets.subtree(id);
 thisR.assets = thisR.assets.chop(id);
 
 % Render, show and save
+sceneGamma = 0.6;
 piWrite(thisR);
 scene = piRender(thisR, 'render type', 'radiance');
 sceneWindow(scene);
@@ -67,10 +76,9 @@ SCENE_WINDOW = false;
 % Scaling to max for each image is also a shortcut OK for here, but is a
 % shortcut. For experiments would be careful to do a common scaling across
 % the whole ensemble of images.
-sceneGamma = 0.6;
 rgb = sceneShowImage(scene,1,sceneGamma);
 rgb = rgb/max(rgb(:));
-imwrite(rgb,'BaseScene.tiff','tif');
+imwrite(rgb,fullfile(outputFilePath,'BaseScene.tiff'),'tif');
 
 % Get the spatial x, y and z coordinate images.  Didn't end up using these,
 % but they could be useful for a more precise attempt to move objects in
@@ -207,7 +215,7 @@ for ss = 1:length(theScales)
             % Write final image out with a name that tells us how it was
             % transformed.  Order is scaling (*100), translation (*100),
             % rotation.
-            imwrite(rgb,sprintf('Scene_%d_%d_%d.tiff',round(100*theScale),round(100*theTranslate),theRotate),'tif');
+            imwrite(rgb,fullfile(outputFilePath,sprintf('Scene_%d_%d_%d.tiff',round(100*theScale),round(100*theTranslate),theRotate)),'tif');
             
             % Report. This printout tells us things about how well the
             % repositioning worked.  Could save the relevant variables each
