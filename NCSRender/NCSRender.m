@@ -18,7 +18,7 @@ if ~piDockerExists, piDockerConfig; end
 
 %% Find directory this file runs in and set up output
 [a,b] = fileparts(which(mfilename));
-outputFilePath = fullfile(a,'..','local','NCSRenderOut');
+outputFilePath = fullfile(a,'..','local','NCSRenderNicole');
 if (~exist(outputFilePath,'dir'))
     mkdir(outputFilePath)
 end
