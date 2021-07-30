@@ -159,6 +159,15 @@ load T_xyz1931
 T_xyz = 683*SplineCmf(S_xyz1931,T_xyz1931,S);
 XYZCalFormat = T_xyz*radianceEnergyCalFormat*S(2);
 
+%% This could be used to convert from monitor space
+% 
+% Drafted but not tested.
+% cal2 = cal;
+% cal2 = SetSensorColorSpace(cal2,T_xyz,S);
+% XYZCalFormat = PrimaryToSensor(cal2,rgbCalFormat);
+% XYZCalFormatExtra = SettingsToSensor(cal2,RGBCalFormat);
+% xyYCalFormat = XYZToxyY(XYZCalFormat);
+
 %% Convert XYZ to sRGB primary values
 %
 % Same general issues with scaling as above confront us here
